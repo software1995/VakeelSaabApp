@@ -1,118 +1,122 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+// import * as React from 'react';
+// import {NavigationContainer} from '@react-navigation/native';
+// import AuthStack from './src/Navigation/AuthStack';
+// import {createNativeStackNavigator} from '@react-navigation/native-stack';
+// import BottomTabStack from './src/Navigation/BottomTabStack';
+// import {useTranslation, initReactI18next} from 'react-i18next';
+// import i18n from 'i18next';
+// import * as RNLocalize from 'react-native-localize';
+// import en from './src/localization/en.json';
+// import hi from './src/localization/hi.json';
+// import {useEffect, useState} from 'react';
+// import {AppState} from 'react-native';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+// const Stack = createNativeStackNavigator();
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+// i18n.use(initReactI18next).init({
+//   resources: {
+//     en: {translation: en},
+//     hi: {translation: hi},
+//   },
+//   fallbackLng: 'en',
+//   interpolation: {
+//     escapeValue: false,
+//   },
+// });
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+// function App() {
+//   const [appState, setAppState] = useState(AppState.currentState);
+//   const [isEventListenerActive, setIsEventListenerActive] = useState(true);
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+//   useEffect(() => {
+//     const detectLanguage = () => {
+//       const locales = RNLocalize.getLocales();
+//       if (locales.length > 0) {
+//         const deviceLanguage = locales[0].languageCode;
+//         i18n.changeLanguage(deviceLanguage);
+//       }
+//     };
+
+//     detectLanguage();
+
+//     const handleAppStateChange = (nextAppState:any) => {
+//       if (appState.match(/inactive|background/) && nextAppState === 'active') {
+//         detectLanguage();
+//       }
+//       setAppState(nextAppState);
+//     };
+
+//     const subscription = AppState.addEventListener(
+//       'change',
+//       handleAppStateChange,
+//     );
+
+//     return () => {
+//       if (isEventListenerActive) {
+//         subscription.remove();
+//         setIsEventListenerActive(false);
+//       }
+//     };
+//   }, [appState, isEventListenerActive]);
+
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator screenOptions={{headerShown: false}}>
+//         <Stack.Screen name="AuthStack" component={AuthStack} />
+//         <Stack.Screen name="BottomTabStack" component={BottomTabStack} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+// export default App;
+
+
+// import * as React from 'react';
+// import {NavigationContainer} from '@react-navigation/native';
+// import {createNativeStackNavigator} from '@react-navigation/native-stack';
+// import AuthStack from './src/Navigation/AuthStack';
+// import BottomTabStack from './src/Navigation/BottomTabStack';
+
+// // Import i18n setup once to initialize localization
+// // import './src/localization/i18n';
+
+// const Stack = createNativeStackNavigator();
+
+// function App() {
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator screenOptions={{headerShown: false}}>
+//         <Stack.Screen name="AuthStack" component={AuthStack} />
+//         <Stack.Screen name="BottomTabStack" component={BottomTabStack} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+// export default App;
+
+
+
+import * as React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import AuthStack from './src/Navigation/AuthStack';
+import BottomTabStack from './src/Navigation/BottomTabStack';
+import { StatusBar } from 'react-native';
+import RootNavigator from './src/Navigation/RootNavigator';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+const Stack = createNativeStackNavigator();
+
+function App() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <>
+         < GestureHandlerRootView>
+           <StatusBar barStyle={'light-content'} backgroundColor='#2196F3' />
+            <RootNavigator />
+         </GestureHandlerRootView>
+    </>
   );
 }
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
