@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { fetchLawyerById } from '../../api/mockApi';
 import StatusIndicator from '../../component/StatusIndicator';
+import Header from '../../utils/Header';
 
 const LawyerProfileScreen = ({ route, navigation }) => {
   const { lawyerId } = route.params;
@@ -68,18 +69,13 @@ const LawyerProfileScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header 
+        HeaderTxt="Lawyer Profile" 
+         showBackButton={true} 
+        onPress={() => navigation.goBack()} 
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButtonSmall}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backButtonTextSmall}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Lawyer Profile</Text>
-        </View>
-        
-        <View style={styles.profileSection}>
+       <View style={styles.profileSection}>
           <Image 
             source={{ uri: lawyer.photo }} 
             style={styles.profilePhoto} 
@@ -143,19 +139,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F7FA',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#2196F3',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-    flex: 1,
-    textAlign: 'center',
-  },
+ 
   backButtonSmall: {
     padding: 5,
   },

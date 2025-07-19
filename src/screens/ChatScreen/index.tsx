@@ -4,32 +4,40 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   FlatList,
   TextInput,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Header from '../../utils/Header';
 
-// Simple chat message component
+// Improved chat message component
 const ChatMessage = ({ message, isUser }) => (
   <View style={[
-    styles.messageBubble,
-    isUser ? styles.userBubble : styles.otherBubble
+    styles.messageContainer,
+    isUser ? styles.userMessageContainer : styles.otherMessageContainer
   ]}>
-    <Text style={[
-      styles.messageText,
-      isUser ? styles.userMessageText : styles.otherMessageText
+    {!isUser && (
+      <Text style={styles.senderName}>{message.user.name}</Text>
+    )}
+    <View style={[
+      styles.messageBubble,
+      isUser ? styles.userBubble : styles.otherBubble
     ]}>
-      {message.text}
-    </Text>
-    <Text style={[
-      styles.timeText,
-      isUser ? styles.userTimeText : styles.otherTimeText
-    ]}>
-      {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-    </Text>
+      <Text style={[
+        styles.messageText,
+        isUser ? styles.userMessageText : styles.otherMessageText
+      ]}>
+        {message.text}
+      </Text>
+      <Text style={[
+        styles.timeText,
+        isUser ? styles.userTimeText : styles.otherTimeText
+      ]}>
+        {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      </Text>
+    </View>
   </View>
 );
 
@@ -119,33 +127,30 @@ const ChatScreen = () => {
   // Render a chat message
   const renderMessage = ({ item }) => {
     const isUser = item.user.id === 'user';
-    return (
-      <View style={[
-        styles.messageContainer,
-        isUser ? styles.userMessageContainer : styles.otherMessageContainer
-      ]}>
-        <ChatMessage message={item} isUser={isUser} />
-      </View>
-    );
+    return <ChatMessage message={item} isUser={isUser} />;
   };
 
+  // Create a status indicator component
+  const statusIndicator = (
+    <View style={styles.statusIndicator}>
+      <View style={[
+        styles.indicator, 
+        { backgroundColor: lawyer.status === 'online' ? '#4CAF50' : '#9E9E9E' }
+      ]} />
+      <Text style={styles.statusText}>
+        {lawyer.status === 'online' ? 'Online' : 'Offline'}
+      </Text>
+    </View>
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButtonSmall}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonTextSmall}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{lawyer.name}</Text>
-        <View style={styles.statusIndicatorSmall}>
-          <View style={[
-            styles.indicator, 
-            { backgroundColor: lawyer.status === 'online' ? '#4CAF50' : '#9E9E9E' }
-          ]} />
-        </View>
-      </View>
+    <View style={styles.container}>
+      {/* Use the shared Header component with status indicator */}
+      <Header
+        HeaderTxt={lawyer.name} 
+        showBackButton={true} 
+        rightComponent={statusIndicator}
+      />
       
       <KeyboardAvoidingView
         style={styles.chatContainer}
@@ -158,6 +163,7 @@ const ChatScreen = () => {
           renderItem={renderMessage}
           keyExtractor={item => item.id.toString()}
           contentContainerStyle={styles.messagesContainer}
+          showsVerticalScrollIndicator={false}
         />
         
         <View style={styles.inputContainer}>
@@ -166,7 +172,9 @@ const ChatScreen = () => {
             value={inputText}
             onChangeText={setInputText}
             placeholder="Type a message..."
+            placeholderTextColor="#140d0dff"  
             multiline
+            maxLength={1000} // Prevent extremely long messages
           />
           <TouchableOpacity 
             style={[
@@ -180,7 +188,7 @@ const ChatScreen = () => {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -189,34 +197,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F7FA',
   },
-  header: {
+  statusIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#2196F3',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-    flex: 1,
-    textAlign: 'center',
-  },
-  backButtonSmall: {
-    padding: 5,
-  },
-  backButtonTextSmall: {
-    fontSize: 22,
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  statusIndicatorSmall: {
-    padding: 5,
   },
   indicator: {
     width: 10,
     height: 10,
     borderRadius: 5,
+    marginRight: 5,
+  },
+  statusText: {
+    color: '#FFFFFF',
+    fontSize: 12,
   },
   chatContainer: {
     flex: 1,
@@ -226,8 +219,14 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   messageContainer: {
-    marginVertical: 5,
+    marginVertical: 8, // More vertical spacing between messages
     maxWidth: '80%',
+  },
+  senderName: {
+    fontSize: 12,
+    color: '#757575',
+    marginBottom: 2,
+    marginLeft: 12,
   },
   userMessageContainer: {
     alignSelf: 'flex-end',
@@ -236,18 +235,23 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   messageBubble: {
-    padding: 10,
-    borderRadius: 15,
+    padding: 12, 
+    borderRadius: 18,
     minWidth: 80,
+    maxWidth: '100%', 
   },
   userBubble: {
     backgroundColor: '#2196F3',
+    borderBottomRightRadius: 4, 
   },
   otherBubble: {
     backgroundColor: '#E8EAF6',
+    borderBottomLeftRadius: 4, 
   },
   messageText: {
     fontSize: 16,
+    lineHeight: 22,
+    letterSpacing: 0.2,
   },
   userMessageText: {
     color: 'white',
@@ -279,24 +283,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     borderRadius: 20,
     paddingHorizontal: 15,
-    paddingVertical: 8,
+    paddingVertical: 10, 
+    paddingTop: 10, 
+    paddingBottom: 10, 
+    fontSize: 16, 
     maxHeight: 100,
+    minHeight: 40, 
+    borderColor:'gray'
   },
   sendButton: {
     marginLeft: 10,
     backgroundColor: '#2196F3',
     borderRadius: 20,
-    paddingVertical: 8,
+    paddingVertical: 10, 
     paddingHorizontal: 15,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'flex-end', 
   },
   sendButtonDisabled: {
     backgroundColor: '#cccccc',
   },
   sendButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontSize: 16, 
+    fontWeight: '600',
   },
 });
 
